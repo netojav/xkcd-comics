@@ -76,16 +76,26 @@ namespace xkcd_comics.Controllers
 
         public async Task<IActionResult> Comic(int num)
         {
+            var comicByNum = await GetComic(num);
+
+            if (comicByNum == null)
+            {
+                return View("404");
+            }
+
             var lastComic = await GetComic();
             var lastComicId = lastComic.num;
 
-            var comicByNum = await GetComic(num);
-            comicByNum.prevNum = await getPrevNextNum(comicByNum.num - 1, true);
+            var prevNum = comicByNum.num - 1;
+            if (prevNum > 0)
+            {
+                comicByNum.prevNum = await getPrevNextNum(comicByNum.num - 1, true);
+            }
 
-            comicByNum.nextNum = comicByNum.num < lastComicId ? 
-                                    await getPrevNextNum(comicByNum.num + 1, false) : 
-                                    0;
-
+            if (comicByNum.num < lastComicId)
+            {
+                comicByNum.nextNum = await getPrevNextNum(comicByNum.num + 1, false);
+            }
 
             return View(comicByNum);
         }
