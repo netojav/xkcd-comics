@@ -23,5 +23,9 @@ namespace xkcd_comics.Models
 
         public string link { get; set; }
 
+        public int prevNum{ get; set;}
+
+        public int nextNum{ get; set;}
+
     }
 }

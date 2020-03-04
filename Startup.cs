@@ -49,6 +49,11 @@ namespace xkcd_comics
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
+                    name: "comic",
+                    pattern: "comic/{num}",
+                    defaults: new { controller = "Home", action = "Comic" }
+                );
+                endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });

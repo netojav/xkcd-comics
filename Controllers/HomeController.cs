@@ -22,25 +22,46 @@ namespace xkcd_comics.Controllers
             _httpClient.BaseAddress = new Uri("https://xkcd.com");
         }
 
-        public async Task<IActionResult> Index()
+        private async Task<ComicModel> GetComic(int? num = null)
         {
-            var lastComic = new ComicModel();
+            var comic = new ComicModel();
+            var comicNumPath = num.HasValue ? $"{num.Value}/" : string.Empty;
             using (_httpClient)
             {
-                using (var response = await _httpClient.GetAsync("info.0.json"))
+                using (var response = await _httpClient.GetAsync($"{comicNumPath}info.0.json"))
                 {
-                   var json = await response.Content.ReadAsStringAsync();
-                   lastComic = JsonConvert.DeserializeObject<ComicModel>(json);
+                    var json = await response.Content.ReadAsStringAsync();
+                    comic = JsonConvert.DeserializeObject<ComicModel>(json);
+                    comic.prevNum = comic.num - 1;
+                    comic.nextNum = num.HasValue ? comic.num + 1 : 0;
                 }
             }
 
+            return comic;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            var lastComic = await GetComic();
+
             return View(lastComic);
+
+        }
+
+
+        public async Task<IActionResult> Comic(int num)
+        {
+            var comicByNum = await GetComic(num);
+
+            return View(comicByNum);
         }
 
         public IActionResult Privacy()
         {
             return View();
         }
+
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
