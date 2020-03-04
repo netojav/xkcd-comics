@@ -1,0 +1,16 @@
+@model ComicModel;
+
+<div class="text-center">
+    <h1 class="display-4">@Model.title</h1>
+    <div class="mb-1 text-muted">@Model.month/@Model.day/@Model.year</div>
+     <img src="@Model.img" />
+    <p> @Model.alt </p>
+    <div class="left"> 
+        @if(Model.prevNum > 0){
+            <a asp-action="Comic" asp-route-num="@Model.prevNum">Previous</a>
+        }
+        @if(Model.nextNum > 0){
+            <a asp-action="Comic" asp-route-num="@Model.nextNum">Next</a>
+        }
+    </div>
+</div>

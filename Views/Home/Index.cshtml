@@ -1,14 +1,6 @@
 ﻿@model ComicModel;
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Today´s comic";
 }
 
-<div class="text-center">
-    <h1 class="display-4">@Model.title</h1>
-    <div class="mb-1 text-muted">@Model.month/@Model.day/@Model.year</div>
-     <img src="@Model.img" />
-    <p> @Model.alt </p>
-    <div class="left"> 
-        <a asp-action="Comic" asp-route-num="@Model.prevNum">Previous</a>
-    </div>
-</div>
+@Html.Partial("_ComicDetails", Model)
