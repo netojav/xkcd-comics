@@ -6,21 +6,35 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using xkcd_comics.Models;
+using System.Net.Http;
+using Newtonsoft.Json;
 
 namespace xkcd_comics.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-
+        private HttpClient _httpClient;
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
+            _httpClient = new HttpClient();
+            _httpClient.BaseAddress = new Uri("https://xkcd.com");
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var lastComic = new ComicModel();
+            using (_httpClient)
+            {
+                using (var response = await _httpClient.GetAsync("info.0.json"))
+                {
+                   var json = await response.Content.ReadAsStringAsync();
+                   lastComic = JsonConvert.DeserializeObject<ComicModel>(json);
+                }
+            }
+
+            return View(lastComic);
         }
 
         public IActionResult Privacy()
