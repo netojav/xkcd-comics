@@ -14,11 +14,11 @@ namespace xkcd_comics.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+       // private readonly ILogger<HomeController> _logger;
         private HttpClient _httpClient;
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController()
         {
-            _logger = logger;
+           // _logger = logger;
             _httpClient = new HttpClient();
             _httpClient.BaseAddress = new Uri("https://xkcd.com");
         }
