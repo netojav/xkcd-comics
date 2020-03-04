@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using xkcd_comics.Models;
 using System.Net.Http;
 using Newtonsoft.Json;
+using System.Net;
 
 namespace xkcd_comics.Controllers
 {
@@ -24,18 +25,20 @@ namespace xkcd_comics.Controllers
 
         private async Task<ComicModel> GetComic(int? num = null)
         {
-            var comic = new ComicModel();
+            ComicModel comic;
             var comicNumPath = num.HasValue ? $"{num.Value}/" : string.Empty;
-            using (_httpClient)
+
+            using (var response = await _httpClient.GetAsync($"{comicNumPath}info.0.json"))
             {
-                using (var response = await _httpClient.GetAsync($"{comicNumPath}info.0.json"))
+                if (response.StatusCode == HttpStatusCode.NotFound)
                 {
-                    var json = await response.Content.ReadAsStringAsync();
-                    comic = JsonConvert.DeserializeObject<ComicModel>(json);
-                    comic.prevNum = comic.num - 1;
-                    comic.nextNum = num.HasValue ? comic.num + 1 : 0;
+                    return null;
                 }
+                var json = await response.Content.ReadAsStringAsync();
+                comic = JsonConvert.DeserializeObject<ComicModel>(json);
+
             }
+
 
             return comic;
         }
@@ -43,7 +46,7 @@ namespace xkcd_comics.Controllers
         public async Task<IActionResult> Index()
         {
             var lastComic = await GetComic();
-
+            lastComic.prevNum = lastComic.num - 1;
             return View(lastComic);
 
         }
@@ -51,7 +54,14 @@ namespace xkcd_comics.Controllers
 
         public async Task<IActionResult> Comic(int num)
         {
+            var lastComic = await GetComic();
+            var lastComicId = lastComic.num;
+
             var comicByNum = await GetComic(num);
+            comicByNum.prevNum = comicByNum.num - 1;
+
+            comicByNum.nextNum = comicByNum.num < lastComicId ? comicByNum.num + 1 : 0;
+
 
             return View(comicByNum);
         }

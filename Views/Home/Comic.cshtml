@@ -9,7 +9,11 @@
      <img src="@Model.img" />
     <p> @Model.alt </p>
     <div class="left"> 
-        <a asp-action="Comic" asp-route-num="@Model.prevNum">Previous</a>
-        <a asp-action="Comic" asp-route-num="@Model.nextNum">Next</a>
+        @if(Model.prevNum > 0){
+            <a asp-action="Comic" asp-route-num="@Model.prevNum">Previous</a>
+        }
+        @if(Model.nextNum > 0){
+            <a asp-action="Comic" asp-route-num="@Model.nextNum">Next</a>
+        }
     </div>
 </div>
